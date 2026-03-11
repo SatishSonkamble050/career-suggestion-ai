@@ -30,7 +30,7 @@ def _get_llm():
 
 def academic_analyzer(state: CareerState) -> Dict[str, Any]:
     """Analyze academic profile"""
-    academic_data = state["input_data"].get("academic", {})
+    academic_data = state.get("input_data", {}).get("academic", {})
     
     prompt = f"""
     Analyze this academic profile and return JSON:
@@ -55,7 +55,7 @@ def academic_analyzer(state: CareerState) -> Dict[str, Any]:
 
 def skill_matcher(state: CareerState) -> Dict[str, Any]:
     """Match skills with career opportunities"""
-    skills_data = state["input_data"].get("skills", {})
+    skills_data = state.get("input_data", {}).get("skills", {})
     academic_analysis = state.get("academic_analysis", {})
     
     prompt = f"""
@@ -85,8 +85,8 @@ def career_generator(state: CareerState) -> Dict[str, Any]:
     """Generate career recommendations"""
     academic = state.get("academic_analysis", {})
     skills = state.get("skill_analysis", {})
-    interests = state["input_data"].get("interests", {})
-    preferences = state["input_data"].get("preferences", {})
+    interests = state.get("input_data", {}).get("interests", {})
+    preferences = state.get("input_data", {}).get("preferences", {})
     
     prompt = f"""
     Generate top 5 career recommendations based on:
@@ -157,8 +157,8 @@ def college_recommender(state: CareerState) -> Dict[str, Any]:
     academic = state.get("academic_analysis", {})
     careers = state.get("career_analysis", {}).get("top_careers", [])
 
-    country = state.get("country_name") or "india"
-    user_state = state.get("state_name") or "any indian state"
+    country = "india"
+    user_state = "any indian state"
 
     prompt = f"""
     Recommend 6 suitable colleges based on academic profile and top career choices.
@@ -197,12 +197,6 @@ def college_recommender(state: CareerState) -> Dict[str, Any]:
         [HumanMessage(content=prompt)]
     )
 
-    colleges = json.loads(response.content)
-
-    return {
-        "college_recommendations": colleges
-    }
-    
     try:
         response_text = response.content.strip()
         if "```json" in response_text:
