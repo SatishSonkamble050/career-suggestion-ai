@@ -33,6 +33,8 @@ class CareerInput(BaseModel):
 class StudentInput(BaseModel):
     """Input data for student career queries"""
     student_id: int
+    state: Optional[str] = None
+    country_name: Optional[str] = None
     academic: Optional[Dict[str, Any]] = {}
     skills: Optional[Dict[str, Any]] = {}
     interests: Optional[Dict[str, Any]] = {}
@@ -112,6 +114,9 @@ async def suggest_career(
         # Prepare initial state
         initial_state: CareerState = {
             "student_id": data.student_id,
+            "state_name" : data.state,
+            "country_name": data.country_name,
+
             "input_data": {
                 "academic": data.academic or {},
                 "skills": data.skills or {},
