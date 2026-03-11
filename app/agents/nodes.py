@@ -152,31 +152,56 @@ def career_generator(state: CareerState) -> Dict[str, Any]:
 
 
 def college_recommender(state: CareerState) -> Dict[str, Any]:
-    """Recommend colleges based on profile"""
+    """Recommend colleges based on academic profile, state, and country"""
+
     academic = state.get("academic_analysis", {})
     careers = state.get("career_analysis", {}).get("top_careers", [])
-    
+
+    country = state.get("country_name")
+    user_state = state.get("state_name")
+
     prompt = f"""
     Recommend 6 suitable colleges based on academic profile and top career choices.
-    Academic Analysis: {json.dumps(academic)}
-    Top Careers: {json.dumps(careers[:3])}
-    
+
+    Student Location:
+    Country: {"india" if country is None else country}
+    State: {user_state}
+
+    Prefer colleges in the same state first. If not enough options are available,
+    recommend colleges within the same country.
+
+    Academic Analysis:
+    {json.dumps(academic)}
+
+    Top Careers:
+    {json.dumps(careers[:3])}
+
     Return ONLY a JSON array (not wrapped in any key) of 6 college objects.
+
     Each college must have exactly these fields:
     - id: string (unique identifier)
     - name: string (college name)
     - state: string (state/region)
     - type: string (Government or Private)
     - ranking: integer (national ranking)
-    - jeeAdvancedCutoff: integer or null (if applicable)
-    - relevantCourses: array of strings (program names)
+    - jeeAdvancedCutoff: integer or null
+    - relevantCourses: array of strings
     - placementRate: number (percentage 0-100)
     - avgPackage: number (salary in lakhs)
-    
-    Example format: [{{id: "1", name: "...", state: "...", type: "...", ...}}, ...]
+
+    Example format:
+    [{{"id": "1", "name": "...", "state": "...", "type": "...", ...}}]
     """
-    
-    response = _get_llm().invoke([HumanMessage(content=prompt)])
+
+    response = _get_llm().invoke(
+        [HumanMessage(content=prompt)]
+    )
+
+    colleges = json.loads(response.content)
+
+    return {
+        "college_recommendations": colleges
+    }
     
     try:
         response_text = response.content.strip()

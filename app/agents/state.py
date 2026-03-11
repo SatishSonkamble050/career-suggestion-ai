@@ -5,6 +5,8 @@ from typing import TypedDict, Dict, Any
 class CareerState(TypedDict, total=False):
     """State for career guidance graph with all fields optional"""
     student_id: Any
+    state_name : Any
+    country_name : Any
     input_data: Any
     academic_analysis: Any
     skill_analysis: Any
