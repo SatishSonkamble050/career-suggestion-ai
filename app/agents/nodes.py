@@ -157,14 +157,14 @@ def college_recommender(state: CareerState) -> Dict[str, Any]:
     academic = state.get("academic_analysis", {})
     careers = state.get("career_analysis", {}).get("top_careers", [])
 
-    country = state.get("country_name")
-    user_state = state.get("state_name")
+    country = state.get("country_name") or "india"
+    user_state = state.get("state_name") or "any indian state"
 
     prompt = f"""
     Recommend 6 suitable colleges based on academic profile and top career choices.
 
     Student Location:
-    Country: {"india" if country is None else country}
+    Country: {country}
     State: {user_state}
 
     Prefer colleges in the same state first. If not enough options are available,
